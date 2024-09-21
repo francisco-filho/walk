@@ -10,6 +10,7 @@ import (
 
 type config struct {
 	ext string
+	archive string
 	size int64
 	list bool
 	del bool
@@ -23,6 +24,7 @@ func main(){
 	size := flag.Int64("size", 0, "The min size of the files")
 	del := flag.Bool("del", false, "Delete the files")
 	logfile := flag.String("log", "", "File to save the logs")
+	archive := flag.String("archive", "", "Diretory to archive the files")
 
 	flag.Parse()
 
@@ -42,6 +44,7 @@ func main(){
 		list: *list,
 		size: *size,
 		del: *del,
+		archive: *archive,
 		logWriter: f,
 	}
 
@@ -64,6 +67,13 @@ func run(root string, out io.Writer, cfg config) error {
 
 			if cfg.list {
 				return listFiles(path, out)
+			}
+
+			if cfg.archive != "" {
+				if err := archiveFile(cfg.archive, root, path); err != nil {
+					return err
+				}
+				
 			}
 
 			if cfg.del {
